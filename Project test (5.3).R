@@ -4,7 +4,7 @@ install.packages("tidyverse")
 install.packages("plotly")
 library(tidyverse) ## loads ggplot2, dplyr, tidyr, & stringr (& readr, purr, tibble, & forcats)
 library(lubridate) ##tidyverse non-core
-library(plotly) 
+library(plotly)
 
 ###The Data!
 
@@ -32,6 +32,3 @@ z <- ((x/y)*100)
 ### Separating dates into seperate columns
 
 clean <- separate(raw_data, Date, c("Month", "Day", "Year"))
-
-rlang::last_error()
-?separate
