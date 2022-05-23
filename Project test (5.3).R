@@ -1,11 +1,10 @@
 ###The Libraries!
 
-library(ggplot2)
-library(plotly)
-library(dplyr)
-library(stringr)
-library(lubridate)
-library(tidyr)
+install.packages("tidyverse")
+install.packages("plotly")
+library(tidyverse) ## loads ggplot2, dplyr, tidyr, & stringr (& readr, purr, tibble, & forcats)
+library(lubridate) ##tidyverse non-core
+library(plotly) 
 
 ###The Data!
 
