@@ -8,7 +8,7 @@ library(plotly)
 
 ###The Data!
 
-raw_data <- read.csv("https://heybertrussell.github.io/NYT_Data/nytcrosswords.csv", stringsAsFactors = FALSE)
+raw_data <- read.csv("https://heybertrussell.github.io/DS_Proj/nytcrosswords.csv", stringsAsFactors = FALSE)
 
 ### numbers of cols & rows
 
