@@ -17,7 +17,7 @@ nrow(raw_data)
 
 #### Regex for what we want
 
-culled <- raw_data %>% filter(str_detect(Clue, "^(?=.*\\?$)(?:(?!\\_).)*$|perhaps$"))
+examples <- raw_data %>% filter(str_detect(Clue, "^(?=.*\\?$)(?:(?!\\_).)*$|perhaps$"))
 
 #### I can barely understand any of this, but it gets all that end in either "?" or "perhaps" and omits any with "_"
 
@@ -31,40 +31,60 @@ z <- ((x/y)*100)
 
 ###Adding column identifying each as "direct" or "indirect"
 
-raw_data_dicol <- raw_data %>% transform(direct=ifelse((str_detect(Clue, "^(?=.*\\?$)(?:(?!\\_).)*$|perhaps$")), "indirect", "direct"))
+raw_data_dicol <- raw_data %>%
+  transform(direct=ifelse((str_detect(Clue, "^(?=.*\\?$)(?:(?!\\_).)*$|perhaps$")), "indirect", "direct"))
 
 ###group by date w/ columns for direct & indirect sums:
 
 ### These are seperate dfs
 
 ttl_clues_pd <- raw_data_dicol %>% 
-  group_by(Date) %>% summarise(num_day = n())
+  group_by(Date) %>%
+  summarise(num_day = n())
 
 ttl_ind_pd <- raw_data_dicol %>% 
-  group_by(Date) %>% summarise(num_ind = sum(direct == "indirect"))
+  group_by(Date) %>%
+  summarise(num_ind = sum(direct == "indirect"))
 
 ttl_dir_pd <- raw_data_dicol %>% 
-  group_by(Date) %>% summarise(num_dir = sum(direct == "direct")) 
+  group_by(Date) %>%
+  summarise(num_dir = sum(direct == "direct")) 
 
 ##### how to put all these into one string!?!?!?!?!?
 
 ##### Warmer:
 
 test <- raw_data_dicol %>% 
-  group_by(Date, direct) %>% summarise(n())
+  group_by(Date, direct) %>%
+  summarise(n())
 
 test2 <- raw_data_dicol %>% 
   group_by(Date, direct)
 
 #### YES:
 
-test3 <- ttl_clues_pd <- raw_data_dicol %>% 
-  group_by(Date) %>% summarise(num_day = n(), num_ind = sum(direct == "indirect"), num_dir = sum(direct == "direct"))
+dates_nums <- raw_data_dicol %>% 
+  group_by(Date) %>% summarise(num_day = n(),
+                               num_ind = sum(direct == "indirect"),
+                               num_dir = sum(direct == "direct"))
 
 #### Now for the percent!!!!
 
-percenttest <- test3 %>% transform(percent_ind = ((num_ind/num_dir) * 100))
+dn_percents <- dates_nums %>%
+  transform(percent_ind = ((num_ind/num_dir) * 100))
 
-#### Export as CSV
+#### Export as CSV: write.csv(dates_nums, "datesnums.csv")
 
-write.csv(percenttest, "percenttest.csv")
+#### Modifying Dates
+
+dater_nums <- dn_percents %>% transform(Date = mdy(dates_nums$Date))
+
+#### adding month name, day of week, week of year
+
+dater_nums_plus <- dater_nums %>% 
+  transform(Month = month(dater_nums$Date, label = TRUE), ### Month Name
+            WkDay = wday(dater_nums$Date, label = TRUE), ### Day of Week
+            WkYear = week(dater_nums$Date), ### Week of Year
+            YDay = yday(dater_nums$Date)) ### Day of Year
+
+my_tst <- dater_nums_plus %>% mutate(Year = year(Date)) %>% group_by(Year, Month) %>% summarize(mean(percent_ind))
