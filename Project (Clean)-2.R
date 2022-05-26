@@ -6,6 +6,7 @@ install.packages("plotly")
 library(tidyverse) ## loads ggplot2, dplyr, tidyr, & stringr (& readr, purr, tibble, & forcats)
 library(lubridate) ##tidyverse non-core
 library(plotly)
+library(RColorBrewer)
 
 #### The Data! ----
 ### Loading the New York Times (NYT) Crossword Puzzle data and saving it to a new dataframe called raw_data
@@ -19,10 +20,15 @@ nrow(raw_data) # 781,573 rows
 
 
 ### Creating a regex for finding indirect clues
-# It detects all strings in the "Clue" column that end in either "?" or "perhaps" and omits any with "_". 
+# It detects all strings in the "Clue" column that end in "?" and omits any with "_"
 
 examples <- raw_data %>% 
-  filter(str_detect(Clue, "^(?=.*\\?$)(?:(?!\\_).)*$|perhaps$"))
+  filter(!raw_data$Date %in% c("6/19/2014")) %>%
+  filter(str_detect(Clue, "^(?=.*\\?$)(?:(?!\\_).)*"))
+
+###Export csv for examples
+
+write.csv(examples, "examples.csv")
 
 ### * Modified Data ----
 ### Creating a new dataframe that includes a new column identifying whether the clue type is "direct" or "indirect"
@@ -100,7 +106,7 @@ total_indirect <- crossword_final %>% summarise(sum(num_ind))
 
 options(scipen=999)
 
-### *Group and Plot ----
+### * Group and Plot ----
 
 ### Plotting the percent of indirect clues for each day in the crossword_final dataframe
 
@@ -117,7 +123,6 @@ ggplotly(percent_scatter, tooltip = "text")
 
 ###   Grouping the existing crossword_final dataframe in different ways, creating new dataframes, and plotting them:
 
-
   ## ** By year ----
 
     # Grouping by year
@@ -129,7 +134,13 @@ ggplotly(percent_scatter, tooltip = "text")
       year_bar <- ggplot(year_group)+ #bar plot
         geom_col(aes(x=Year,
                      y=Average_Percent_Indirect,
-                     text=paste(Year, Average_Percent_Indirect)))
+                     fill=Average_Percent_Indirect,
+                     text=paste("Year:",Year,"\n% Indirect:",Average_Percent_Indirect))) +
+        labs( title = "By Year",
+              x = "Year",
+              y = "Average Percent Indirect") +
+        theme(legend.position="none") +
+        scale_fill_viridis_c(option = 'turbo',direction = -1)
       
       ggplotly(year_bar, tooltip = "text")
 
@@ -145,7 +156,13 @@ ggplotly(percent_scatter, tooltip = "text")
       weekday_bar <- ggplot(weekday_group)+ #bar plot
         geom_col(aes(x=WkDay,
                      y=Average_Percent_Indirect,
-                     text=paste(WkDay, "\n",Average_Percent_Indirect)))
+                     fill=Average_Percent_Indirect,
+                     text=paste(WkDay, "\n",Average_Percent_Indirect)))+
+        labs( title = "By Day of the Week",
+              x = "Day",
+              y = "Average Percent Indirect") +
+        theme(legend.position="none") +
+        scale_fill_viridis_c(option = 'turbo',direction = -1)
       
       ggplotly(weekday_bar, tooltip = "text")
       
@@ -161,14 +178,24 @@ ggplotly(percent_scatter, tooltip = "text")
       month_bar <- ggplot(month_group)+ #bar plot
         geom_col(aes(x=Month,
                y=Average_Percent_Indirect,
-               text=paste(Month, "\n",Average_Percent_Indirect)))
+               fill=Average_Percent_Indirect,
+               text=paste(Month, "\n",Average_Percent_Indirect))) +
+        labs( title = "By Month of the Year",
+              x = "Month",
+              y = "Average Percent Indirect") +
+        scale_fill_viridis_c(option = 'turbo',direction = -1) +
+        theme(legend.position="none")
       
       ggplotly(month_bar, tooltip = "text")
 
       month_line <- ggplot(month_group)+ #line plot
-      geom_line(aes(x=Month,
+        geom_line(aes(x=Month,
                 y=Average_Percent_Indirect,
-                group=1))
+                group=1))+
+        labs( title = "By Month of the Year",
+              x = "Month",
+              y = "Average Percent Indirect") +
+        theme(legend.position="none")
 
       ggplotly(month_line)
       
@@ -220,3 +247,18 @@ ggplotly(percent_scatter, tooltip = "text")
         theme_void() # remove background, grid, numeric labels
 
         clue_total_pie
+        
+  ## ** 
+        
+      multi_yr <- crossword_final %>% 
+        mutate()
+        
+        ggplot(ggplot) +
+          geom_point(aes(x=pub_date,
+                         y=percentage, 
+                         color = gender,
+                         shape = gender))+
+          geom_smooth(aes(x= pub_date,
+                          y= percentage,
+                          color= gender,
+                          shape= gender))
