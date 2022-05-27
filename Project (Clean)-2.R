@@ -3,6 +3,7 @@
 ### Installing and loading the packages 
 install.packages("tidyverse")
 install.packages("plotly")
+install.packages("RColorBrewer")
 library(tidyverse) ## loads ggplot2, dplyr, tidyr, & stringr (& readr, purr, tibble, & forcats)
 library(lubridate) ##tidyverse non-core
 library(plotly)
@@ -241,12 +242,22 @@ ggplotly(percent_scatter, tooltip = "text")
         summarize(total_num = n())
 
     # Plotting by clue type and total of each
-      clue_total_pie <- ggplot(clue_total, aes(x="", y=total_num, fill=ClueType))+ #pie chart
-        geom_col()+
-        coord_polar(theta="y") +
-        theme_void() # remove background, grid, numeric labels
+      # Plotting by clue type and total of each
+      clue_total_pie <- ggplot(clue_total, aes(x="", y=total_num, fill=ClueType)) + #pie chart
+        geom_bar(stat="identity", width=1, color="white") +
+        coord_polar("y", start=0) +
+        geom_label(aes(label = total_num),
+          position = position_stack(vjust = 0.5),
+          show.legend = FALSE) +
+        labs(x = NULL,
+             y = NULL,
+                fill = "Clue Type") +
+        theme_void() +
+        theme(legend.position = 'left') +
+        ggtitle("Total of Number of Clues by Type") +
+        scale_fill_discrete(labels = c("Direct", "Indirect"))
 
-        clue_total_pie
+      clue_total_pie
         
   ## ** 
         
