@@ -16,7 +16,11 @@ Sys.setenv(plotly_api_key="Y7ytptmQ7sjZpguIAmEb")
 ### Chart Studio Template
 #api_create(your_plot, filename = "your-filename")
 
-api_create(weekday_bar, filename = "weekday_bar")
+api_create(last_plot(), filename = NULL)
+
+
+
+?api_create.ggplot
 
 #### The Data! ----
 ### Loading the New York Times (NYT) Crossword Puzzle data and saving it to a new dataframe called raw_data
@@ -120,25 +124,25 @@ options(scipen=999)
 
 ### Plotting the percent of indirect clues for each day in the crossword_final dataframe
 
-percent_scatter <- ggplot(crossword_final)+ #scatter plot
-  geom_point(aes(x=Date,
-                 y=percent_ind,
-                 text = paste(Date),
-                 color = Year)) +
-  geom_smooth(aes(x=Date,
-                  y=percent_ind),
-                  color = "#333333")+
-  geom_smooth(aes(x=Date,
-                  y=percent_ind),
-              method = "lm",
-              color="black") +
-  scale_color_viridis_c(option = 'turbo',direction = -1) +
-  labs( title = "Each Day Plotted",
-        x = "Month",
-        y = "Average Percent Indirect") +
-  theme(legend.position="none")
-
-ggplotly(percent_scatter, tooltip = "text")
+      percent_scatter <- ggplot(crossword_final)+ #scatter plot
+        geom_point(aes(x=Date,
+                       y=percent_ind,
+                       text = paste(Date),
+                       color = Year)) +
+        geom_smooth(aes(x=Date,
+                        y=percent_ind),
+                        color = "#333333")+
+        geom_smooth(aes(x=Date,
+                        y=percent_ind),
+                    method = "lm",
+                    color="black") +
+        scale_color_viridis_c(option = 'turbo',direction = -1) +
+        labs( title = "Each Day Plotted",
+              x = "Month",
+              y = "Average Percent Indirect") +
+        theme(legend.position="none")
+      
+      ggplotly(percent_scatter, tooltip = "text")
 
 
 ###   Grouping the existing crossword_final dataframe in different ways, creating new dataframes, and plotting them:
@@ -151,11 +155,11 @@ ggplotly(percent_scatter, tooltip = "text")
         summarize(Average_Percent_Indirect = round(mean(percent_ind), digits = 2))
       
     # Plotting by year
-      year_bar <- ggplot(year_group)+ #bar plot
-        geom_col(aes(x=Year,
-                     y=Average_Percent_Indirect,
-                     fill=Average_Percent_Indirect,
-                     text=paste("<b>Year</b>:",Year,"\n<b>Percent Indirect</b>:",Average_Percent_Indirect))) +
+      year_bar <- ggplot(year_group, aes(x=Year,
+                                         y=Average_Percent_Indirect,
+                                         fill=Average_Percent_Indirect,
+                                         text=paste("<b>Year</b>:",Year,"\n<b>Percent Indirect</b>:",Average_Percent_Indirect)))+ #bar plot
+        geom_col() +
         labs( title = "By Year",
               x = "Year",
               y = "Average Percent Indirect") +
