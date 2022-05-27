@@ -8,6 +8,7 @@ library(tidyverse) ## loads ggplot2, dplyr, tidyr, & stringr (& readr, purr, tib
 library(lubridate) ##tidyverse non-core
 library(plotly)
 library(RColorBrewer)
+library(scales)
 
 ### Connecting to Chart Studio
 Sys.setenv(plotly_username="robbrownell")
@@ -18,9 +19,6 @@ Sys.setenv(plotly_api_key="Y7ytptmQ7sjZpguIAmEb")
 
 api_create(last_plot(), filename = NULL)
 
-
-
-?api_create.ggplot
 
 #### The Data! ----
 ### Loading the New York Times (NYT) Crossword Puzzle data and saving it to a new dataframe called raw_data
@@ -270,14 +268,16 @@ options(scipen=999)
         geom_bar(stat="identity", width=1, color="white") +
         coord_polar("y", start=0) +
         geom_label(aes(label = total_num),
-          position = position_stack(vjust = 0.5),
-          show.legend = FALSE) +
+                   position = position_stack(vjust = 0.5),
+                   show.legend = FALSE) +
         labs(x = NULL,
              y = NULL,
-                fill = "Clue Type") +
+             fill = "Clue Type") +
         theme_void() +
         theme(legend.position = 'left') +
         ggtitle("Total of Number of Clues by Type") +
         scale_fill_discrete(labels = c("Direct", "Indirect"))
-
+      
       clue_total_pie
+        
+        
