@@ -10,16 +10,6 @@ library(plotly)
 library(RColorBrewer)
 library(scales)
 
-### Connecting to Chart Studio
-Sys.setenv(plotly_username="robbrownell")
-Sys.setenv(plotly_api_key="Y7ytptmQ7sjZpguIAmEb")
-
-### Chart Studio Template
-#api_create(your_plot, filename = "your-filename")
-
-api_create(last_plot(), filename = NULL)
-
-
 #### The Data! ----
 ### Loading the New York Times (NYT) Crossword Puzzle data and saving it to a new dataframe called raw_data
 
@@ -125,7 +115,7 @@ options(scipen=999)
       percent_scatter <- ggplot(crossword_final)+ #scatter plot
         geom_point(aes(x=Date,
                        y=percent_ind,
-                       text = paste(Date),
+                       text = paste("<b>Date</b>:",Date, "\n<b>Percent</b>:",(round(mean(percent_ind), digits = 2))),
                        color = Year)) +
         geom_smooth(aes(x=Date,
                         y=percent_ind),
@@ -136,8 +126,8 @@ options(scipen=999)
                     color="black") +
         scale_color_viridis_c(option = 'turbo',direction = -1) +
         labs( title = "Each Day Plotted",
-              x = "Month",
-              y = "Average Percent Indirect") +
+              x = "Date (Colored by Year)",
+              y = "Percent Indirect") +
         theme(legend.position="none")
       
       ggplotly(percent_scatter, tooltip = "text")
